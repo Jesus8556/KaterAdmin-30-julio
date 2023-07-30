@@ -1,0 +1,220 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="container-fluid">
+    <h1>Detalle de Cotización</h1>
+
+    <h2>Orden de Proforma</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Proforma</th>
+                <th>Fecha de Proforma</th>
+                <th>BU</th>
+                <th>Condición Pago</th>
+                <th>Moneda</th>
+                <th>Validez de O/P</th>
+                <th>Vendedor</th>
+                <th>Correo</th>
+                <th>Celular</th>
+                <th>Actividad</th>
+                <th>Observaciones</th>
+                <!-- Agrega aquí otros campos de la tabla de Proforma -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ cotizacion.proforma }}</td>
+                <td>{{ cotizacion.proforma.fecha }}</td>
+                <td>{{ cotizacion.proforma.bu }}</td>
+                <td>{{ cotizacion.proforma.condicion_pago }}</td>
+                <td>{{ cotizacion.proforma.moneda }}</td>
+                <td>{{ cotizacion.proforma.validez }}</td>
+                <td>{{ cotizacion.proforma.vendedor }}</td>
+                <td>{{ cotizacion.proforma.correo }}</td>
+                <td>{{ cotizacion.proforma.celular }}</td>
+                <td>{{ cotizacion.proforma.actividad }}</td>
+                <td>{{ cotizacion.proforma.observacion }}</td>
+                <!-- Agrega aquí otros campos de la tabla de Proforma -->
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>{{ cotizacion.proforma }}</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Atencion</th>
+                <th>Cliente</th>
+                <th>RUC-DNI</th>
+                <th>Telefono</th>
+                <th>Correo</th>
+                <th>Observacion</th>
+                <!-- Agrega aquí otros campos de la tabla de Cliente -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{cotizacion.cliente.atencion}}</td>
+                <td>{{cotizacion.cliente.cliente}}</td>
+                <td>{{cotizacion.cliente.ruc_dni}}</td>
+                <td>{{cotizacion.cliente.telefono}}</td>
+                <td>{{cotizacion.cliente.correo}}</td>
+                <!-- Agrega aquí otros campos de la tabla de Cliente -->
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+
+
+
+    <!-- Formulario para agregar detalles -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="col-xl-12 col-md-6 mb-8">
+                            <div class="card border-left-success shadow h-100 py-7">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Tasas de Cambio</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">1 USD = {{pen_rate|floatformat:2 }} PEN</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <form method="post" id="conversion-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="pen_rate" value="{{ pen_rate|floatformat:2 }}">
+                            <button type="submit" class="btn btn-success btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </span>
+                                <span class="text">Convertir a dolares </span>
+                            </button>
+
+
+                        </form>
+                        <div class="my-2"></div>
+                        <a href="#" class="btn btn-info btn-icon-split">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-print"></i>
+                            </span>
+                            <span class="text">Imprimir Cotizacion</span>
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+            </div>
+        </div>
+        <div class="my-4"></div>
+        <div class="row">
+            <!-- Columna de la izquierda (Tabla) -->
+            <div class="col-md-6">
+
+                <div class="card shadow mb-8">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Descripcion</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>item</th>
+                                        <th>cantidad</th>
+                                        <th>Codigo</th>
+                                        <th>Descripcion</th>
+                                        <th>p_unitario</th>
+                                        <th>Disponibilidad</th>
+                                        <th>Total</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for detalle in detalles %}
+                                    <!-- Contenido de la tabla -->
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ detalle.cantidad}}</td>
+                                        <td>{{detalle.codigo}}</td>
+                                        <td>{{detalle.descripcion}}</td>
+                                        <td>{{detalle.precio_unitario}}</td>
+                                        <td>{{detalle.disponibilidad}}</td>
+                                        <td>{{detalle.precio_total}}</td>
+
+                                        <td>
+                                            <!-- Icono para editar -->
+                                            <a href="#" class="btn btn-warning btn-circle">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <!-- Icono para eliminar -->
+                                            <a href="#" class="btn btn-danger btn-circle eliminar-cliente">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna de la derecha (Formulario) -->
+            <div class="col-md-6">
+                <!-- Formulario para agregar detalles -->
+                <h2>Agregar nuevo dato</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    <button type="submit" class="btn btn-primary">Guardar Detalles</button>
+                </form>
+
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<!-- Agregar este script al final del template -->
+<!-- Agregar este script al final del template -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#conversion-form').on('submit', function (event) {
+            event.preventDefault();
+            // Obtener el valor del dólar en soles del campo oculto del formulario
+            var penRate = parseFloat($('[name="pen_rate"]').val());
+
+            // Recorrer cada fila de la tabla y convertir el precio unitario a dólares
+            $('#dataTable tbody tr').each(function () {
+                var precioUnitarioSoles = parseFloat($(this).find('td:eq(4)').text());
+                var precioUnitarioDolares = (precioUnitarioSoles / penRate).toFixed(2);
+                // Actualizar el valor del precio unitario en la tabla con el valor en dólares
+                $(this).find('td:eq(4)').text(precioUnitarioDolares);
+            });
+        });
+    });
+</script>
+
+
+
+{% endblock %}
